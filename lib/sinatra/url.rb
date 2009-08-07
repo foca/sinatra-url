@@ -10,6 +10,10 @@ module Sinatra
     end
 
     class Mapper
+      def self.default
+        @default ||= new
+      end
+
       def initialize
         @map = {}
       end
@@ -78,20 +82,16 @@ module Sinatra
 
     module DSL
       def url(name, path)
-        url_map[name] = path
+        Mapper.default[name] = path
         path
       end
     end
 
     module Helpers
       def url_for(name, params={})
-        self.class.url_map[name].call(params)
+        Mapper.default[name].call(params)
       end
     end
-  end
-
-  class Base
-    set :url_map, URL::Mapper.new
   end
 
   register URL
