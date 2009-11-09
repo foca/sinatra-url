@@ -21,6 +21,21 @@ class TestUrl < Test::Unit::TestCase
       get "/foo/bar"
       assert last_response.ok?
     end
+
+    test "can register an url without specifying a path if already registered" do
+      mock_app {
+        post url(:foo, "/foo/:name") do |name|
+          assert_equal "bar", name
+        end
+
+        get url(:foo) do |name|
+          assert_equal "bar", name
+        end
+      }
+      get "/foo/bar"
+      assert last_response.ok?
+    end
+
   end
 
   context "generating urls with url_for for registered handlers" do

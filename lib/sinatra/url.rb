@@ -81,9 +81,9 @@ module Sinatra
     end
 
     module DSL
-      def url(name, path)
-        Mapper.default[name] = path
-        path
+      def url(name, path=nil)
+        Mapper.default[name] = path unless path.nil?
+        Mapper.default[name] or raise ArgumentError, "Unregistered path for '#{name}'"
       end
     end
 
