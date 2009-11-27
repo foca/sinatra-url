@@ -44,11 +44,21 @@ module Sinatra
       def call(params)
         params[:splat] = Array(params[:splat])
         url = @path.dup
+
         keys.each do |key|
           match = key == "splat" ? "*" : ":#{key}"
           replacement = key == "splat" ? params[:splat].shift : params[key.to_sym]
-          url.sub! match, replacement
+          unless url.sub! match, replacement
+            get_params[key] = params[key.to_sym]
+          end
         end
+
+        get_params = params.map do |key, value|
+          next if key == :splat || keys.include?(key.to_s)
+          "#{key}=#{value}"
+        end.compact
+
+        url << "?#{get_params.join('&')}" unless get_params.empty?
         url
       end
 
@@ -89,7 +99,8 @@ module Sinatra
 
     module Helpers
       def url_for(name, params={})
-        Mapper.default[name].call(params)
+        route = Mapper.default[name] or raise ArgumentError, "Unregistered path for '#{name}'"
+        route.call(params)
       end
     end
   end

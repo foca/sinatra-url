@@ -58,5 +58,28 @@ class TestUrl < Test::Unit::TestCase
       get "/say/hi/to/mom"
       assert last_response.ok?
     end
+
+    test "generating urls with extra arguments for GET" do
+      mock_app {
+        get url(:foo, "/foo/:name") do |name|
+          assert_equal "/foo/bar?get=param", url_for(:foo, :name => "bar", :get => 'param')
+        end
+      }
+      get "/foo/bar"
+      assert last_response.ok?
+    end
+  end
+
+  context "generating urls with url_for for unregistered handlers" do
+    test "should raise ArgumentError" do
+      assert_raise ArgumentError do
+        mock_app {
+          get "/" do
+            url_for(:unknown)
+          end
+        }
+        get "/"
+      end
+    end
   end
 end
