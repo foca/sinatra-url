@@ -53,12 +53,12 @@ module Sinatra
           end
         end
 
-        get_params = params.map do |key, value|
-          next if key == :splat || keys.include?(key.to_s)
-          "#{key}=#{value}"
-        end.compact
+        get_params = {}
+        params.each do |key, value|
+          get_params[key] = value unless key == :splat || keys.include?(key.to_s)
+        end
 
-        url << "?#{get_params.join('&')}" unless get_params.empty?
+        url << "?" + Rack::Utils.build_query(get_params) unless get_params.empty?
         url
       end
 
