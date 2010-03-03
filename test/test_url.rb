@@ -49,6 +49,29 @@ class TestUrl < Test::Unit::TestCase
       assert last_response.ok?
     end
 
+    test "generating urls with :named_params using integer" do
+      mock_app {
+        get url(:foo, "/foo/:id") do |name|
+          assert_equal "/foo/10", url_for(:foo, :id => 10)
+        end
+      }
+      get "/foo/10"
+      assert last_response.ok?
+    end
+
+    test "generating urls with :named_params using object responding to #to_param" do
+      mock_app {
+        get url(:foo, "/foo/:name") do |name|
+          obj = Object.new
+          def obj.to_param; "toparam"; end
+
+          assert_equal "/foo/toparam", url_for(:foo, :name => obj)
+        end
+      }
+      get "/foo/toparam"
+      assert last_response.ok?
+    end
+
     test "generating urls with splat args" do
       mock_app {
         get url(:foo, "/say/*/to/*") do

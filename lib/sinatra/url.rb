@@ -47,7 +47,9 @@ module Sinatra
 
         keys.each do |key|
           match = key == "splat" ? "*" : ":#{key}"
-          replacement = key == "splat" ? params[:splat].shift : params[key.to_sym]
+          value = key == "splat" ? params[:splat].shift : params[key.to_sym]
+          replacement = to_param(value)
+
           unless url.sub! match, replacement
             get_params[key] = params[key.to_sym]
           end
@@ -55,7 +57,8 @@ module Sinatra
 
         get_params = {}
         params.each do |key, value|
-          get_params[key] = value unless key == :splat || keys.include?(key.to_s)
+          get_params[key] = to_param(value) unless
+            key == :splat || keys.include?(key.to_s)
         end
 
         url << "?" + Rack::Utils.build_query(get_params) unless get_params.empty?
@@ -63,6 +66,10 @@ module Sinatra
       end
 
       private
+
+      def to_param(obj)
+        obj.respond_to?(:to_param) ? obj.to_param : obj.to_s
+      end
 
       def compile(path)
         keys = []
