@@ -95,6 +95,12 @@ module Sinatra
           raise TypeError, path
         end
       end
+
+      # Some middleware expects this to behave like a pattern
+      def method_missing(name, *args, &block)
+        @pattern.send(name, *args, &block)
+      end
+
     end
 
     module DSL

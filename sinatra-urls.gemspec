@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = "sinatra-url"
-  s.version     = "0.0.1"
+  s.version     = "0.0.2"
   s.description = "Simple sinatra extension that gives you the ability to use named URLs in your code"
   s.summary     = "Named URLs for Sinatra apps"
   s.authors     = ["Nicolas Sanguinetti"]
